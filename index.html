@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Engineering Hero Carousel</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- CSS Reset & Base Styles --- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      /* --- Carousel Container --- */
+      .hero-carousel {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        min-height: 600px;
+        overflow: hidden;
+        background-color: #1a1a1a;
+      }
+
+      /* --- Individual Slide --- */
+      .carousel-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+        z-index: 1;
+      }
+
+      .carousel-slide.active {
+        opacity: 1;
+        z-index: 2;
+      }
+
+      .carousel-slide img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+      }
+
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.55); /* Slightly darkened for readability */
+        z-index: 2;
+      }
+
+      /* --- Carousel Content --- */
+      .carousel-content {
+        position: relative;
+        z-index: 3;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-left: 10%;
+        max-width: 900px;
+        color: #ffffff;
+      }
+
+      .subtitle {
+        color: #ffb600;
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        font-weight: 600;
+        opacity: 0;
+      }
+
+      .title {
+        font-size: 4.5rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 25px;
+        opacity: 0;
+      }
+
+      .services-list {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+        opacity: 0;
+      }
+
+      .services-list li {
+        display: flex;
+        align-items: center;
+      }
+
+      .services-list .dot {
+        width: 12px;
+        height: 12px;
+        background-color: #ffb600;
+        border-radius: 50%;
+        margin: 0 15px;
+      }
+
+      .btn-primary {
+        display: inline-block;
+        background-color: #ffb600;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 15px 40px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 4px;
+        width: fit-content;
+        transition: background-color 0.3s ease;
+        opacity: 0;
+      }
+
+      .btn-primary:hover {
+        background-color: #e5a400;
+      }
+
+      /* --- Animations --- */
+      @keyframes fadeInDown {
+        0% {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        0% {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .carousel-slide.active .subtitle {
+        animation: fadeInDown 0.8s ease forwards;
+        animation-delay: 0.3s;
+      }
+
+      .carousel-slide.active .title {
+        animation: fadeInDown 0.8s ease forwards;
+        animation-delay: 0.5s;
+      }
+
+      .carousel-slide.active .services-list {
+        animation: fadeInUp 0.8s ease forwards;
+        animation-delay: 0.7s;
+      }
+
+      .carousel-slide.active .btn-primary {
+        animation: fadeInUp 0.8s ease forwards;
+        animation-delay: 0.9s;
+      }
+
+      /* --- Navigation Arrows --- */
+      .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 4;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        line-height: 1;
+        transition: background 0.3s ease;
+      }
+
+      .nav-btn:hover {
+        background: #ffb600;
+        border-color: #ffb600;
+      }
+
+      .prev-btn {
+        left: 30px;
+        padding-right: 4px;
+      }
+
+      .next-btn {
+        right: 30px;
+        padding-left: 4px;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .title {
+          font-size: 3rem;
+        }
+        .carousel-content {
+          padding-left: 5%;
+          padding-right: 5%;
+        }
+        .nav-btn {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+        }
+        .prev-btn {
+          left: 10px;
+        }
+        .next-btn {
+          right: 10px;
+        }
+        .services-list {
+          font-size: 0.9rem;
+          flex-wrap: wrap;
+          gap: 10px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero-carousel">
+      <!-- Slide 1: Aerial Construction -->
+      <div class="carousel-slide active">
+        <img src="img/carousel-1.jpg" alt="Aerial view of construction site" />
+        <div class="overlay"></div>
+
+        <div class="carousel-content">
+          <div class="subtitle">SCALE & VISION</div>
+          <h1 class="title">
+            Monumental<br />Developments &<br />Urban Planning
+          </h1>
+          <ul class="services-list">
+            <li>Master Planning</li>
+            <li><span class="dot"></span>Structural Engineering</li>
+            <li><span class="dot"></span>Project Management</li>
+          </ul>
+          <a href="#" class="btn-primary">Explore Projects</a>
+        </div>
+      </div>
+
+      <!-- Slide 2: Street Roadwork -->
+      <div class="carousel-slide">
+        <img src="img/carousel-2.jpg" alt="City road infrastructure work" />
+        <div class="overlay"></div>
+
+        <div class="carousel-content">
+          <div class="subtitle">INFRASTRUCTURE EXPERTS</div>
+          <h1 class="title">Building the<br />Roads of<br />Tomorrow</h1>
+          <ul class="services-list">
+            <li>Civil Engineering</li>
+            <li><span class="dot"></span>Public Works</li>
+            <li><span class="dot"></span>Urban Utilities</li>
+          </ul>
+          <a href="#" class="btn-primary">Our Services</a>
+        </div>
+      </div>
+
+      <!-- Slide 3: Excavator / Earthmoving -->
+      <div class="carousel-slide">
+        <img src="img/carousel-3.jpg" alt="Heavy excavator machine on site" />
+        <div class="overlay"></div>
+
+        <div class="carousel-content">
+          <div class="subtitle">HEAVY MACHINERY</div>
+          <h1 class="title">
+            Earthmoving &<br />Site Preparation<br />Specialists
+          </h1>
+          <ul class="services-list">
+            <li>Excavation</li>
+            <li><span class="dot"></span>Land Clearing</li>
+            <li><span class="dot"></span>Foundation Work</li>
+          </ul>
+          <a href="#" class="btn-primary">View Equipment</a>
+        </div>
+      </div>
+
+      <!-- Slide 4: Welding / Metalwork -->
+      <div class="carousel-slide">
+        <img
+          src="img/carousel-4.jpg"
+          alt="Worker grinding metal creating sparks"
+        />
+        <div class="overlay"></div>
+
+        <div class="carousel-content">
+          <div class="subtitle">PRECISION METALWORK</div>
+          <h1 class="title">
+            Expert Welding &<br />Structural Steel<br />Fabrication
+          </h1>
+          <ul class="services-list">
+            <li>Industrial Welding</li>
+            <li><span class="dot"></span>Custom Fabrication</li>
+            <li><span class="dot"></span>Safety First</li>
+          </ul>
+          <a href="#" class="btn-primary">Get a Quote</a>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <button class="nav-btn prev-btn" id="prevBtn">&#10094;</button>
+      <button class="nav-btn next-btn" id="nextBtn">&#10095;</button>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const slides = document.querySelectorAll(".carousel-slide");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        let currentSlideIndex = 0;
+        let slideInterval;
+
+        function showSlide(index) {
+          slides.forEach((slide) => slide.classList.remove("active"));
+          currentSlideIndex = (index + slides.length) % slides.length;
+          void slides[currentSlideIndex].offsetWidth;
+          slides[currentSlideIndex].classList.add("active");
+        }
+
+        prevBtn.addEventListener("click", () => {
+          showSlide(currentSlideIndex - 1);
+          resetInterval();
+        });
+
+        nextBtn.addEventListener("click", () => {
+          showSlide(currentSlideIndex + 1);
+          resetInterval();
+        });
+
+        function startInterval() {
+          slideInterval = setInterval(() => {
+            showSlide(currentSlideIndex + 1);
+          }, 6000);
+        }
+
+        function resetInterval() {
+          clearInterval(slideInterval);
+          startInterval();
+        }
+
+        startInterval();
+      });
+    </script>
+  </body>
+</html>
